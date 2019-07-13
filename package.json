@@ -1,0 +1,43 @@
+{
+  "name": "memory-server",
+  "version": "1.0.0",
+  "description": "A websocket implementation for [memory-ui](https://github.com/jhkruse/memory-ui) remote players.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint '**/*.ts' --exclude '**/node_modules/**' --exclude 'dist/**' --exclude '**/*.d.ts'",
+    "dev": "ts-node ./src/server.ts",
+    "start": "node ./dist/server.js",
+    "prod": "npm run build && npm run lint && npm test && && npm start",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deadratfink/memory-server.git"
+  },
+  "keywords": [
+    "memory"
+  ],
+  "author": "Jens Krefeldt <jens.krefeldt@finanzcheck.de> (https://github.com/deadratfink)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deadratfink/memory-server/issues"
+  },
+  "homepage": "https://github.com/deadratfink/memory-server#readme",
+  "dependencies": {
+    "@types/uuid": "~3.4.5",
+    "express": "~4.17.1",
+    "socket.io": "~2.2.0",
+    "socket.io-client": "~2.2.0",
+    "uuid": "~3.3.2"
+  },
+  "devDependencies": {
+    "@types/express": "~4.17.0",
+    "@types/node": "~12.6.2",
+    "@types/socket.io": "~2.1.2",
+    "@types/socket.io-client": "~1.4.32",
+    "ts-node": "~8.3.0",
+    "tslint": "~5.18.0",
+    "typescript": "~3.5.3"
+  }
+}
