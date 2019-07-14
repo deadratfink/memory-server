@@ -6,10 +6,11 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint '**/*.ts' --exclude '**/node_modules/**' --exclude 'dist/**' --exclude '**/*.d.ts'",
-    "dev": "ts-node ./src/server.ts",
-    "start": "node ./dist/server.js",
+    "start:dev": "ts-node ./src/simple-game-server.ts",
+    "start": "node ./dist/simple-game-server.js",
     "prod": "npm run build && npm run lint && npm test && && npm start",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "game:example:flow": "ts-node ./examples/game-example-flow.ts"
   },
   "repository": {
     "type": "git",
