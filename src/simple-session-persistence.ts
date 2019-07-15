@@ -13,7 +13,7 @@ export class SimpleGameSessionPersistence implements GameSessionsPersistence {
   public create(session: SessionMessage): string {
     this.sessions[session.id] = session;
     // console.log(`DB: session created => ${JSON.stringify(session, null, 2)}`);
-    console.log(`DB: latest state after CREATE => ${JSON.stringify(this.sessions, null, 2)}`);
+    // console.log(`DB: latest state after CREATE => ${JSON.stringify(this.sessions, null, 2)}`);
     return session.id;
   }
 
@@ -30,7 +30,7 @@ export class SimpleGameSessionPersistence implements GameSessionsPersistence {
   public update(id: string, session: SessionMessage): SessionMessage {
     this.sessions[id] = session;
     // console.log(`DB: session update => ${JSON.stringify(session, null, 2)}`);
-    console.log(`DB: latest state after UPDATE => ${JSON.stringify(this.sessions, null, 2)}`);
+    // console.log(`DB: latest state after UPDATE => ${JSON.stringify(this.sessions, null, 2)}`);
     return session;
   }
 

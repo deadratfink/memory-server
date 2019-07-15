@@ -93,7 +93,7 @@ export class GameServer {
       };
 
       socket.on(PLAYER_START, (session: SessionMessage) => {
-        console.log(`SERVER: on PLAYER_START =>\n${JSON.stringify(session, null, 2)}`);
+        // console.log(`SERVER: on PLAYER_START =>\n${JSON.stringify(session, null, 2)}`);
         safeJoin(session.id);
         sessionsDB.create(session);
         io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
@@ -101,7 +101,7 @@ export class GameServer {
       });
 
       socket.on(PLAYER_JOIN, (session: SessionJoinMessage) => {
-        console.log(`SERVER: on PLAYER_JOIN =>\n${JSON.stringify(session, null, 2)}`);
+        // console.log(`SERVER: on PLAYER_JOIN =>\n${JSON.stringify(session, null, 2)}`);
         safeJoin(session.id);
         const currentSession = sessionsDB.read(session.id);
         sessionsDB.update(session.id, {
@@ -121,10 +121,10 @@ export class GameServer {
       });
 
       socket.on(PLAYER_LEAVE, (session: SessionLeaveMessage) => {
-        console.log(`SERVER: on PLAYER_LEAVE =>\n${JSON.stringify(session, null, 2)}`);
+        // console.log(`SERVER: on PLAYER_LEAVE =>\n${JSON.stringify(session, null, 2)}`);
         let sessionToLeave;
         if (session.players.length === 0) {
-          console.log('PLAYERS 0 =============================')
+          // console.log('PLAYERS 0 =============================')
           sessionToLeave = sessionsDB.delete(session.id);
         } else {
           const currentSession = sessionsDB.read(session.id);
@@ -151,7 +151,7 @@ export class GameServer {
         sessionsDB.update(id, {
           id,
           name: currentSession.name,
-          status: 'joined',
+          status: currentSession.status,
           sessionOwnerNetworkId: currentSession.sessionOwnerNetworkId,
           senderPlayerIndex: update.senderPlayerIndex,
           senderPlayerNetworkId: update.senderPlayerNetworkId,
@@ -164,13 +164,14 @@ export class GameServer {
       });
 
       socket.on(PLAYERS_UPDATE, (update: PlayersUpdateMessage) => {
-        console.log(`SERVER: on PLAYERS_UPDATE =>\n${JSON.stringify(update, null, 2)}`);
+        console.log('PLAYERS_UPDATE');
+        // console.log(`SERVER: on PLAYERS_UPDATE =>\n${JSON.stringify(update, null, 2)}`);
         const id = update.sessionId;
         const currentSession = sessionsDB.read(id);
         sessionsDB.update(id, {
           id,
           name: currentSession.name,
-          status: 'joined',
+          status: currentSession.status,
           sessionOwnerNetworkId: currentSession.sessionOwnerNetworkId,
           senderPlayerIndex: update.senderPlayerIndex,
           senderPlayerNetworkId: update.senderPlayerNetworkId,
@@ -187,12 +188,12 @@ export class GameServer {
 
     io.on(CLOSE, () => {
       setTimeout(() => {
-        console.log('SOCKET-SERVER: websockets closed!');
+        // console.log('SOCKET-SERVER: websockets closed!');
         this.httpServer.close((err?: Error) => {
           if (err) {
-            console.error(`SERVER: closed HTTP server with error: ${err.stack}!`);
+            // console.error(`SERVER: closed HTTP server with error: ${err.stack}!`);
           } else {
-            console.log('SERVER: HTTP server closed!');
+            // console.log('SERVER: HTTP server closed!');
           }
         });
       }, 500);
@@ -201,12 +202,12 @@ export class GameServer {
 
   private start(port: number) {
     this.httpServer.listen(port);
-    console.log(`SERVER: listening on http://${os.hostname()}:${port} ...`);
+    // console.log(`SERVER: listening on http://${os.hostname()}:${port} ...`);
     try {
       const en0Ipv4 = os.networkInterfaces().en0.find((elem) => (elem.family === 'IPv4'));
       const ip = en0Ipv4 ? en0Ipv4.address : undefined;
       if (ip) {
-        console.log(`SERVER: listening on http://${ip}:${port} ...`);
+        // console.log(`SERVER: listening on http://${ip}:${port} ...`);
       }
     } catch (_) { }
   }
