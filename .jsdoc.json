@@ -1,0 +1,25 @@
+{
+  "source": {
+    "include": [
+      "dist",
+      "test"
+    ],
+    "exclude": [
+      "node_modules"
+    ],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)(_|\\.)"
+  },
+  "opts": {
+    "encoding": "utf8",
+    "recurse": true
+  },
+  "plugins": [
+    "node_modules/jsdoc-babel"
+  ],
+  "babel": {
+    "plugins": [
+      "@babel/transform-async-to-generator"
+    ]
+  }
+}

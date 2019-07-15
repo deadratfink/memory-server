@@ -1,26 +1,3 @@
-# memory-server (v1.0.0)
-
-A websocket implementation for [memory-ui](https://github.com/jhkruse/memory-ui) remote players.
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## TOC
-
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-  - [Install Node.js](#install-nodejs)
-  - [Install Dependencies](#install-dependencies)
-- [Start Server](#start-server)
-  - [Dev-Mode](#dev-mode)
-  - [Prod-Mode](#prod-mode)
-- [Usage](#usage)
-  - [Instantiate Server](#instantiate-server)
-  - [Use own Persistence Layer](#use-own-persistence-layer)
-- [Further information](#further-information)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-
 ## Introduction
 
 This project provides the server to run network games within [memory-ui](https://github.com/jhkruse/memory-ui)
@@ -164,17 +141,3 @@ interface CardModel {
   removed: boolean;
 }
 ```
-
-
-## Further information
-
-- [Module Details](./PACKAGE.md)
-
-- [Api Reference](./API.md)
-
-- [Makefile Reference](./MAKE.md)
-
-- [Changelog](./CHANGELOG.md)
-
-- [License](./LICENSE.md)
-

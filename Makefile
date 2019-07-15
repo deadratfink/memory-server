@@ -8,22 +8,34 @@ help: ## Prints the help about targets.
 	@printf "Targets:\n"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf " \033[34m%-14s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
-install: ## Installs all modules.
-	@printf "Install all modules...\n"
+install: ## Install all dependencies.
+	@printf "Install all dependencies...\n"
 	npm install
 
-start: ## Starts the development server.
-	@printf "Starting the development server...\n"
-	npm run start:dev
+start: ## Starts the development simple game server (`ts` code).
+	@printf "Starting the the simple game server (ts code)...\n"
+	npm run start:ts
 
-start-prod: ## Starts the production server.
-	@printf "Starting the production server...\n"
-	npm run start
+start-js: ## Starts the the simple game server (`js` code).
+	@printf "Starting the the simple game server (js code)...\n"
+	npm run start:js
 
-build: ## Starts the build to folder _./dist_
-	@printf "Starting the build...\n"
-	npm run build
+prod: ## Transpiles, lints and tests the code before starting the simple game server`.
+	@printf "Transpile...\n"
+	npm run start:prod
+
+readme: ## Creates the README.md.
+	@printf "Creating the README.md...\n"
+	npm run readme
 
 lint: ## Starts the linter.
 	@printf "Starting the linter...\n"
 	npm run lint
+
+test: ## Starts the tests.
+	@printf "Starting the tests...\n"
+	npm test
+
+build: ## Transpiles the code from `ts` to `js`.
+	@printf "Transpile...\n"
+	npm run build

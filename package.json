@@ -6,10 +6,11 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint '**/*.ts' --exclude '**/node_modules/**' --exclude 'dist/**' --exclude '**/*.d.ts'",
-    "start:dev": "ts-node ./src/simple-game-server.ts",
-    "start": "node ./dist/simple-game-server.js",
-    "prod": "npm run build && npm run lint && npm test && && npm start",
+    "start:ts": "ts-node ./src/simple-game-server.ts",
+    "start:js": "node ./dist/simple-game-server.js",
+    "start:prod": "npm run build && npm run lint && npm test && && npm start",
     "test": "echo \"Error: no test specified\" && exit 0",
+    "readme": "TMPDIR=/tmp ./bin/create-readme.sh -p false -c false- -l false && cat README.md > README.tmp && node ./readme/readmePrefix && cat README.tmp >> README.md && rm -f README.tmp",
     "game:example:flow": "ts-node ./examples/game-example-flow.ts"
   },
   "repository": {
@@ -17,7 +18,9 @@
     "url": "git+https://github.com/deadratfink/memory-server.git"
   },
   "keywords": [
-    "memory"
+    "memory",
+    "server",
+    "socket"
   ],
   "author": "Jens Krefeldt <jens.krefeldt@finanzcheck.de> (https://github.com/deadratfink)",
   "license": "MIT",
@@ -26,17 +29,22 @@
   },
   "homepage": "https://github.com/deadratfink/memory-server#readme",
   "dependencies": {
-    "@types/uuid": "~3.4.5",
     "express": "~4.17.1",
     "socket.io": "~2.2.0",
-    "socket.io-client": "~2.2.0",
     "uuid": "~3.3.2"
   },
   "devDependencies": {
+    "@babel/core": "~7.5.4",
     "@types/express": "~4.17.0",
     "@types/node": "~12.6.2",
     "@types/socket.io": "~2.1.2",
     "@types/socket.io-client": "~1.4.32",
+    "@types/uuid": "~3.4.5",
+    "doctoc": "~1.4.0",
+    "jsdoc-babel": "~0.5.0",
+    "jsdoc-to-markdown": "~5.0.0",
+    "package-json-to-readme": "~2.1.1",
+    "socket.io-client": "~2.2.0",
     "ts-node": "~8.3.0",
     "tslint": "~5.18.0",
     "typescript": "~3.5.3"
