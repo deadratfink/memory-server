@@ -100,6 +100,7 @@ export class GameServer {
         sessionsDB.create(session);
         io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
         socket.emit(PLAYER_START, session);
+        // socket.to(session.id).emit(PLAYER_START, session); // TODO is this really necessary?
       });
 
       socket.on(PLAYER_JOIN, (session: SessionJoinMessage) => {
@@ -169,6 +170,7 @@ export class GameServer {
         console.log(`SERVER: on PLAYERS_UPDATE =>\n${JSON.stringify(update, null, 2)}`);
         const id = update.sessionId;
         const currentSession = sessionsDB.read(id);
+        console.log(`CURRENT SESSION: ${JSON.stringify(currentSession, null)}`)
         sessionsDB.update(id, {
           id,
           name: currentSession.name,
