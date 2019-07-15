@@ -3,6 +3,7 @@ import {
   SessionMessage,
   SessionJoinMessage,
   SessionLeaveMessage,
+  SessionDeleteMessage,
   CardsUpdateMessage,
   PlayersUpdateMessage,
   ClientOptions,
@@ -13,24 +14,28 @@ export class LoggingPlayerClient extends AbstractPlayerClient {
     super(options);
   }
 
-  public onPlayerStartedGame(session: SessionMessage, connected: boolean): void {
+  protected onPlayerStartedGame(session: SessionMessage, connected: boolean): void {
     console.log(`CLIENT (PLAYER ${this.playerIndex + (session.senderPlayerIndex === this.playerIndex ? ' It was me!' : '')} connected: ${connected}): onPlayerStartedGame =>\n${JSON.stringify(session, null, 2)}`);
   }
 
-  public onPlayerJoinedGame(session: SessionJoinMessage, connected: boolean): void {
+  protected onPlayerJoinedGame(session: SessionJoinMessage, connected: boolean): void {
     console.log(`CLIENT (PLAYER ${this.playerIndex + 1} connected: ${connected}): onPlayerJoinedGame =>\n${JSON.stringify(session, null, 2)}`);
   }
 
-  public onPlayerLeftGame(session: SessionLeaveMessage, connected: boolean): void {
+  protected onPlayerLeftGame(session: SessionLeaveMessage, connected: boolean): void {
     console.log(`CLIENT (PLAYER ${this.playerIndex + 1} connected: ${connected}): onPlayerLeftGame =>\n${JSON.stringify(session, null, 2)}`);
   }
 
-  public onCardsUpdate(update: CardsUpdateMessage): void {
+  protected onCardsUpdate(update: CardsUpdateMessage): void {
     console.log(`CLIENT (PLAYER ${this.playerIndex + 1}): onCardsUpdate =>\n${JSON.stringify(update, null, 2)}`);
   }
 
-  public onPlayersUpdate(update: PlayersUpdateMessage): void {
+  protected onPlayersUpdate(update: PlayersUpdateMessage): void {
     console.log(`CLIENT (PLAYER ${this.playerIndex + 1}): onPlayersUpdate =>\n${JSON.stringify(update, null, 2)}`);
+  }
+
+  protected onGameSessionDelete(session: SessionDeleteMessage, connected: boolean): void {
+    console.log(`CLIENT (PLAYER ${this.playerIndex + 1}): onGameSessionDelete =>\n${JSON.stringify(session, null, 2)}`);
   }
 
   public onGameSessionsUpdate(sessions: SessionMessage[], connected: boolean): void {

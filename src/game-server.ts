@@ -6,6 +6,7 @@ import {
   SessionMessage,
   SessionJoinMessage,
   SessionLeaveMessage,
+  SessionDeleteMessage,
   CardsUpdateMessage,
   PlayersUpdateMessage,
   ServerOptions,
@@ -17,6 +18,7 @@ import {
   PLAYER_LEAVE,
   CARDS_UPDATE,
   PLAYERS_UPDATE,
+  GAME_SESSION_DELETE,
   GAME_SESSIONS_UPDATE,
 } from './game-events';
 import {
@@ -182,8 +184,25 @@ export class GameServer {
         io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
       });
 
+      socket.on(GAME_SESSION_DELETE, (session: SessionDeleteMessage) => {
+        console.log(`SERVER: on GAME_SESSION_DELETE =>\n${JSON.stringify(session, null, 2)}`);
+        safeJoin(session.id);
+        const currentSession = sessionsDB.read(session.id);
+        if (currentSession.sessionOwnerNetworkId === session.senderPlayerNetworkId) {
+          sessionsDB.delete(session.id);
+          socket.emit(GAME_SESSION_DELETE, session);
+          socket.to(session.id).emit(GAME_SESSION_DELETE, session);
+          io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
+        } else {
+          console.error(`SERVER: player with ID '${session.senderPlayerNetworkId}' is not allowed to delete session with ID '${session.id}'!`);
+        }
+
+      });
+
       io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
     });
+
+
 
     io.on(CLOSE, () => {
       setTimeout(() => {
