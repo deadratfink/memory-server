@@ -8,14 +8,19 @@ A websocket implementation for [memory-ui](https://github.com/jhkruse/memory-ui)
 
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
-  - [Install Node.js](#install-nodejs)
-  - [Install Dependencies](#install-dependencies)
+  - [1. Install Node.js](#1-install-nodejs)
+  - [2. Install Dependencies](#2-install-dependencies)
 - [Start Server](#start-server)
   - [Dev-Mode](#dev-mode)
   - [Prod-Mode](#prod-mode)
 - [Usage](#usage)
   - [Instantiate Server](#instantiate-server)
   - [Use own Persistence Layer](#use-own-persistence-layer)
+- [Development](#development)
+  - [Transpile](#transpile)
+  - [Run the Linter](#run-the-linter)
+  - [Executes Tests](#executes-tests)
+  - [Create Readme](#create-readme)
 - [Further information](#further-information)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -30,7 +35,7 @@ application.
 
 Pls ensure that the following requirements are fulfilled before you go ahead.
 
-### Install Node.js
+### 1. Install Node.js
 
 To use node.js it is recomended to have [nvm](https://github.com/nvm-sh/nvm) installed. Afterwards, you can
 install node, e.g.:
@@ -39,7 +44,7 @@ install node, e.g.:
 $ nvm install 10
 ```
 
-### Install Dependencies
+### 2. Install Dependencies
 
 ```text
 $ make install
@@ -51,14 +56,22 @@ You can start a simple server with a plain memory persistence of the game sessio
 
 ### Dev-Mode
 
+Starting the `ts` code with `ts-node`:
+
 ```text
-$ make install
+$ make start
+```
+
+or for excecting the transpiled `js` code;
+
+```text
+$ make start-js
 ```
 
 ### Prod-Mode
 
 ```text
-$ make install
+$ make prod
 ```
 
 ## Usage
@@ -111,7 +124,7 @@ import {
 } from 'memory-server';
 
 export class SimpleGameSessionPersistence implements GameSessionsPersistence {
-  sessions: any;
+  private sessions: any;
 
   constructor() {
     this.sessions = {};
@@ -134,6 +147,7 @@ export class SimpleGameSessionPersistence implements GameSessionsPersistence {
     this.sessions[id] = session;
     return session;
   }
+}
 ```
 
 The remaining interfaces you need to know:
@@ -163,6 +177,36 @@ interface CardModel {
   uncovered: boolean;
   removed: boolean;
 }
+```
+
+## Development
+
+Tasks usable to go ahead with further development of this module.
+
+### Transpile
+
+To transpile `ts` code to `js` into _./dist_:
+
+```text
+$ make build
+```
+
+### Run the Linter
+
+```text
+$ make lint
+```
+
+### Executes Tests
+
+```text
+$ make lint
+```
+
+### Create Readme
+
+```text
+$ make readme
 ```
 
 

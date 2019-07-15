@@ -1,25 +1,42 @@
 {
   "source": {
     "include": [
-      "dist",
-      "test"
+      "src"
     ],
     "exclude": [
       "node_modules"
     ],
-    "includePattern": ".+\\.js(doc|x)?$",
-    "excludePattern": "(^|\\/|\\\\)(_|\\.)"
+    "includePattern": ".+\\.ts(doc|x)?$",
+    "excludePattern": ".+\\.(test|spec).ts"
   },
   "opts": {
     "encoding": "utf8",
     "recurse": true
   },
   "plugins": [
+    "plugins/markdown",
     "node_modules/jsdoc-babel"
   ],
   "babel": {
-    "plugins": [
-      "@babel/transform-async-to-generator"
-    ]
+    "extensions": [
+      "ts",
+      "tsx"
+    ],
+    "ignore": [
+      "**/*.(test|spec).ts"
+    ],
+    "babelrc": false,
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": true
+          }
+        }
+      ],
+      "@babel/preset-typescript"
+    ],
+    "plugins": []
   }
 }

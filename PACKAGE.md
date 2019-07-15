@@ -30,7 +30,10 @@ npm test
 
 ## Dev Dependencies
 
+- [@babel/cli](https://ghub.io/@babel/cli): Babel command line.
 - [@babel/core](https://ghub.io/@babel/core): Babel compiler core.
+- [@babel/preset-env](https://ghub.io/@babel/preset-env): A Babel preset for each environment.
+- [@babel/preset-typescript](https://ghub.io/@babel/preset-typescript): Babel preset for TypeScript.
 - [@types/express](https://ghub.io/@types/express): TypeScript definitions for Express
 - [@types/node](https://ghub.io/@types/node): TypeScript definitions for Node.js
 - [@types/socket.io](https://ghub.io/@types/socket.io): TypeScript definitions for socket.io

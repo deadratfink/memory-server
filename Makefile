@@ -21,7 +21,7 @@ start-js: ## Starts the the simple game server (`js` code).
 	npm run start:js
 
 prod: ## Transpiles, lints and tests the code before starting the simple game server`.
-	@printf "Transpile...\n"
+	@printf "Transpile, lint, test and start server...\n"
 	npm run start:prod
 
 readme: ## Creates the README.md.

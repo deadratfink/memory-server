@@ -73,7 +73,7 @@ if [ "$api" == "true" ]; then
   printf "Create documentation (API.md)\n"
   touch API.md
   printf "<!-- START doctoc -->\n<!-- END doctoc -->\n\n" >> API.md
-  node node_modules/.bin/jsdoc2md package.json index.js --no-cache --configure .jsdoc-public.json . > API.md
+  node node_modules/.bin/jsdoc2md package.json --no-cache --configure .jsdoc.json . > API.md
   node node_modules/.bin/doctoc API.md --github --title "## TOC" --maxlevel 2
 
   printf -- "- [Api Reference](./API.md)" >> README.md
