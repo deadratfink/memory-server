@@ -8,4 +8,6 @@ export const CARDS_UPDATE = 'cardsUpdate';
 
 export const PLAYERS_UPDATE = 'playersUpdate';
 
+export const GAME_SESSION_DELETE= 'gameSessionDelete';
+
 export const GAME_SESSIONS_UPDATE = 'gameSessionsUpdate';

@@ -6,6 +6,7 @@ import {
   SessionMessage,
   SessionJoinMessage,
   SessionLeaveMessage,
+  SessionDeleteMessage,
   CardsUpdateMessage,
   PlayersUpdateMessage,
   ClientOptions,
@@ -16,6 +17,7 @@ import {
   PLAYER_LEAVE,
   CARDS_UPDATE,
   PLAYERS_UPDATE,
+  GAME_SESSION_DELETE,
   GAME_SESSIONS_UPDATE,
 } from './game-events';
 
@@ -66,6 +68,10 @@ export abstract class AbstractPlayerClient {
       this.onPlayersUpdate(update);
     });
 
+    this.socket.on(GAME_SESSION_DELETE, (session: SessionDeleteMessage) => {
+      this.onGameSessionDelete(session, this.connected);
+    });
+
     this.socket.on(GAME_SESSIONS_UPDATE, (sessions: SessionMessage[]) => {
       this.onGameSessionsUpdate(sessions, this.connected);
     });
@@ -76,6 +82,7 @@ export abstract class AbstractPlayerClient {
   protected abstract onPlayerLeftGame(session: SessionLeaveMessage, connected: boolean): void;
   protected abstract onCardsUpdate(update: CardsUpdateMessage): void;
   protected abstract onPlayersUpdate(update: PlayersUpdateMessage): void;
+  protected abstract onGameSessionDelete(session: SessionDeleteMessage, connected: boolean): void;
   protected abstract onGameSessionsUpdate(sessions: SessionMessage[], connected: boolean): void;
 
   public getPlayerNetworkId() {
@@ -106,6 +113,15 @@ export abstract class AbstractPlayerClient {
       cards,
     };
     this.socket.emit(PLAYER_START, session);
+    return session;
+  }
+
+  public quitGame(sessionId: string): SessionDeleteMessage {
+    const session: SessionDeleteMessage = {
+      id: sessionId,
+      senderPlayerNetworkId: this.playerNetworkId,
+    };
+    this.socket.emit(GAME_SESSION_DELETE, session);
     return session;
   }
 

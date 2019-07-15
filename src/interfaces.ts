@@ -38,6 +38,11 @@ export interface SessionLeaveMessage {
   players: PlayerModel[];
 }
 
+export interface SessionDeleteMessage {
+  id: string;
+  senderPlayerNetworkId: string;
+}
+
 export interface CardsUpdateMessage {
   sessionId: string;
   senderPlayerIndex: number;
