@@ -3,11 +3,11 @@ import uuidV4 from 'uuid/V4';
 import {
   PlayerModel,
   CardModel,
-  SessionModel,
-  SessionJoinModel,
-  SessionLeaveModel,
-  CardsUpdateModel,
-  PlayersUpdateModel,
+  SessionMessage,
+  SessionJoinMessage,
+  SessionLeaveMessage,
+  CardsUpdateMessage,
+  PlayersUpdateMessage,
   ClientOptions,
 } from './interfaces';
 import {
@@ -24,22 +24,24 @@ export abstract class AbstractPlayerClient {
   private socket: any;
   private connected: boolean;
   protected connectionRequested: boolean;
+  protected playerNetworkId: string;
 
   constructor(options: ClientOptions) {
     this.connected = false;
     this.connectionRequested = false;
 
     this.playerIndex = options.playerIndex;
+    this.playerNetworkId = options.playerNetworkId;
     this.socket = io(options.socketUrl); // TODO make configurable
 
-    this.socket.on(PLAYER_START, (session: SessionModel) => {
+    this.socket.on(PLAYER_START, (session: SessionMessage) => {
       if (session.senderPlayerIndex === this.playerIndex) {
         this.connected = true;
       }
       this.onPlayerStartedGame(session, this.connected);
     });
 
-    this.socket.on(PLAYER_JOIN, (session: SessionJoinModel) => {
+    this.socket.on(PLAYER_JOIN, (session: SessionJoinMessage) => {
       if (session.senderPlayerIndex === this.playerIndex) {
         this.connected = true;
         this.connectionRequested = false;
@@ -47,7 +49,7 @@ export abstract class AbstractPlayerClient {
       this.onPlayerJoinedGame(session, this.connected);
     });
 
-    this.socket.on(PLAYER_LEAVE, (session: SessionLeaveModel) => {
+    this.socket.on(PLAYER_LEAVE, (session: SessionLeaveMessage) => {
       if (session.senderPlayerIndex === this.playerIndex) {
         this.connected = false;
       } else if (session.senderPlayerIndex < this.playerIndex) {
@@ -56,27 +58,35 @@ export abstract class AbstractPlayerClient {
       this.onPlayerLeftGame(session, this.connected);
     });
 
-    this.socket.on(CARDS_UPDATE, (update: CardsUpdateModel) => {
+    this.socket.on(CARDS_UPDATE, (update: CardsUpdateMessage) => {
       this.onCardsUpdate(update);
     });
 
-    this.socket.on(PLAYERS_UPDATE, (update: PlayersUpdateModel) => {
+    this.socket.on(PLAYERS_UPDATE, (update: PlayersUpdateMessage) => {
       this.onPlayersUpdate(update);
     });
 
-    this.socket.on(GAME_SESSIONS_UPDATE, (sessions: SessionModel[]) => {
+    this.socket.on(GAME_SESSIONS_UPDATE, (sessions: SessionMessage[]) => {
       this.onGameSessionsUpdate(sessions, this.connected);
     });
   }
 
-  protected abstract onPlayerStartedGame(session: SessionModel, connected: boolean): void;
-  protected abstract onPlayerJoinedGame(session: SessionJoinModel, connected: boolean): void;
-  protected abstract onPlayerLeftGame(session: SessionLeaveModel, connected: boolean): void;
-  protected abstract onCardsUpdate(update: CardsUpdateModel): void;
-  protected abstract onPlayersUpdate(update: PlayersUpdateModel): void;
-  protected abstract onGameSessionsUpdate(sessions: SessionModel[], connected: boolean): void;
+  protected abstract onPlayerStartedGame(session: SessionMessage, connected: boolean): void;
+  protected abstract onPlayerJoinedGame(session: SessionJoinMessage, connected: boolean): void;
+  protected abstract onPlayerLeftGame(session: SessionLeaveMessage, connected: boolean): void;
+  protected abstract onCardsUpdate(update: CardsUpdateMessage): void;
+  protected abstract onPlayersUpdate(update: PlayersUpdateMessage): void;
+  protected abstract onGameSessionsUpdate(sessions: SessionMessage[], connected: boolean): void;
 
-  public getPlayerIndex() {
+  public getPlayerNetworkId() {
+    return this.playerNetworkId;
+  }
+
+  public setPlayerNetworkId(playerNetworkId: string) {
+    return this.playerNetworkId = playerNetworkId;
+  }
+
+  public getPlayerIndex() { // TODO could we remove this.playerIndex from this class?
     return this.playerIndex;
   }
 
@@ -84,12 +94,14 @@ export abstract class AbstractPlayerClient {
     return this.playerIndex = playerIndex;
   }
 
-  public startGame(sessionName: string, player?: PlayerModel, cards: CardModel[] = []): SessionModel {
-    const session: SessionModel = {
+  public startGame(sessionName: string, player?: PlayerModel, cards: CardModel[] = []): SessionMessage {
+    const session: SessionMessage = {
       id: uuidV4(),
       name: sessionName,
       status: 'open',
+      sessionOwnerNetworkId: this.playerNetworkId,
       senderPlayerIndex: 0,
+      senderPlayerNetworkId: this.playerNetworkId,
       players: [],
       cards,
     };
@@ -103,10 +115,11 @@ export abstract class AbstractPlayerClient {
    * @param playerIndex - The index of the player who will join.
    * @param players     - The current players array (already enriched by the new player!).
    */
-  public joinGame(sessionId: string, playerIndex: number, players: PlayerModel[]): SessionJoinModel {
-    const session: SessionJoinModel = {
+  public joinGame(sessionId: string, playerIndex: number, players: PlayerModel[]): SessionJoinMessage {
+    const session: SessionJoinMessage = {
       id: sessionId,
       senderPlayerIndex: playerIndex,
+      senderPlayerNetworkId: this.playerNetworkId,
       players,
     };
     this.socket.emit(PLAYER_JOIN, session);
@@ -120,7 +133,7 @@ export abstract class AbstractPlayerClient {
    * @param playerIndex - The index of the player who will leave.
    * @param players     - The current players array (unchanged!).
    */
-  public leaveGame(sessionId: string, playerIndex: number, players: PlayerModel[]): SessionLeaveModel {
+  public leaveGame(sessionId: string, playerIndex: number, players: PlayerModel[]): SessionLeaveMessage {
     console.log(`CLIENT: execute leaveGame =>  playerIndex: ${playerIndex} and players.length - 1: ${players.length - 1}`)
     if (playerIndex < players.length - 1 && players[playerIndex].active) { // there is a successor
       players[playerIndex + 1].active = true;
@@ -131,30 +144,33 @@ export abstract class AbstractPlayerClient {
     const playerLeft: PlayerModel = players.splice(playerIndex, 1)[0];
 
     console.log(`XXXX ==== CLIENT: execute leaveGame =>  players:\n${JSON.stringify(players, null, 2)}`)
-    const session: SessionLeaveModel = {
+    const session: SessionLeaveMessage = {
       id: sessionId,
       playerLeft,
       senderPlayerIndex: playerIndex,
+      senderPlayerNetworkId: this.playerNetworkId,
       players,
     };
     this.socket.emit(PLAYER_LEAVE, session);
     return session;
   }
 
-  public updateCards(sessionId: string, playerIndex: number, cards: CardModel[]): CardsUpdateModel {
-    const update: CardsUpdateModel = {
+  public updateCards(sessionId: string, playerIndex: number, cards: CardModel[]): CardsUpdateMessage {
+    const update: CardsUpdateMessage = {
       sessionId,
       senderPlayerIndex: playerIndex,
+      senderPlayerNetworkId: this.playerNetworkId,
       cards,
     };
     this.socket.emit(CARDS_UPDATE, update);
     return update;
   }
 
-  public updatePlayers(sessionId: string, playerIndex: number, players: PlayerModel[]): PlayersUpdateModel {
-    const update: PlayersUpdateModel = {
+  public updatePlayers(sessionId: string, playerIndex: number, players: PlayerModel[]): PlayersUpdateMessage {
+    const update: PlayersUpdateMessage = {
       sessionId,
       senderPlayerIndex: playerIndex,
+      senderPlayerNetworkId: this.playerNetworkId,
       players,
     };
     this.socket.emit(PLAYERS_UPDATE, update);

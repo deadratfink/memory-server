@@ -1,4 +1,5 @@
 export interface PlayerModel {
+  networkId: string;
   name: string;
   score: number;
   active: boolean;
@@ -11,46 +12,52 @@ export interface CardModel {
   removed: boolean;
 }
 
-export interface SessionModel {
+export interface SessionMessage {
   id: string;
   name: string;
   status: string;
+  sessionOwnerNetworkId: string;
   senderPlayerIndex: number;
+  senderPlayerNetworkId: string;
   players: PlayerModel[];
   cards: CardModel[];
 }
 
-export interface SessionJoinModel {
+export interface SessionJoinMessage {
   id: string;
   senderPlayerIndex: number;
+  senderPlayerNetworkId: string;
   players: PlayerModel[];
 }
 
-export interface SessionLeaveModel {
+export interface SessionLeaveMessage {
   id: string;
   playerLeft: PlayerModel;
   senderPlayerIndex: number;
+  senderPlayerNetworkId: string;
   players: PlayerModel[];
 }
 
-export interface CardsUpdateModel {
+export interface CardsUpdateMessage {
   sessionId: string;
   senderPlayerIndex: number;
+  senderPlayerNetworkId: string;
   cards: CardModel[];
 }
 
-export interface PlayersUpdateModel {
+export interface PlayersUpdateMessage {
   sessionId: string;
   senderPlayerIndex: number;
+  senderPlayerNetworkId: string;
   players: PlayerModel[];
 }
 
 export interface GameSessionsPersistence {
-  create(session: SessionModel): string;
-  read(id: string): SessionModel;
-  readAll(): SessionModel[];
-  update(id: string, session: SessionModel): SessionModel;
-  delete(id: string): SessionModel;
+  create(session: SessionMessage): string;
+  read(id: string): SessionMessage;
+  readAll(): SessionMessage[];
+  update(id: string, session: SessionMessage): SessionMessage;
+  delete(id: string): SessionMessage;
 }
 
 export interface ServerOptions {
@@ -61,5 +68,6 @@ export interface ServerOptions {
 
 export interface ClientOptions {
   playerIndex: number;
+  playerNetworkId: string;
   socketUrl: string;
 }

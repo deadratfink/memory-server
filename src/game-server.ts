@@ -3,11 +3,11 @@ import http from 'http';
 import os from 'os';
 import socketIo, { Server } from 'socket.io';
 import {
-  SessionModel,
-  SessionJoinModel,
-  SessionLeaveModel,
-  CardsUpdateModel,
-  PlayersUpdateModel,
+  SessionMessage,
+  SessionJoinMessage,
+  SessionLeaveMessage,
+  CardsUpdateMessage,
+  PlayersUpdateMessage,
   ServerOptions,
   GameSessionsPersistence,
 } from './interfaces';
@@ -92,7 +92,7 @@ export class GameServer {
         previousId = currentId;
       };
 
-      socket.on(PLAYER_START, (session: SessionModel) => {
+      socket.on(PLAYER_START, (session: SessionMessage) => {
         console.log(`SERVER: on PLAYER_START =>\n${JSON.stringify(session, null, 2)}`);
         safeJoin(session.id);
         sessionsDB.create(session);
@@ -100,7 +100,7 @@ export class GameServer {
         socket.emit(PLAYER_START, session);
       });
 
-      socket.on(PLAYER_JOIN, (session: SessionJoinModel) => {
+      socket.on(PLAYER_JOIN, (session: SessionJoinMessage) => {
         console.log(`SERVER: on PLAYER_JOIN =>\n${JSON.stringify(session, null, 2)}`);
         safeJoin(session.id);
         const currentSession = sessionsDB.read(session.id);
@@ -108,16 +108,19 @@ export class GameServer {
           id: session.id,
           name: currentSession.name,
           status: 'joined',
+          sessionOwnerNetworkId: currentSession.sessionOwnerNetworkId,
           senderPlayerIndex: session.senderPlayerIndex,
+          senderPlayerNetworkId: session.senderPlayerNetworkId,
           players: session.players,
           cards: currentSession.cards,
         });
 
         io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
         socket.emit(PLAYER_JOIN, session);
+        socket.to(session.id).emit(PLAYER_JOIN, session);
       });
 
-      socket.on(PLAYER_LEAVE, (session: SessionLeaveModel) => {
+      socket.on(PLAYER_LEAVE, (session: SessionLeaveMessage) => {
         console.log(`SERVER: on PLAYER_LEAVE =>\n${JSON.stringify(session, null, 2)}`);
         let sessionToLeave;
         if (session.players.length === 0) {
@@ -129,7 +132,9 @@ export class GameServer {
             id: session.id,
             name: currentSession.name,
             status: session.players.length === 1 ? 'open' : 'joined', // enables more than 2 players!
+            sessionOwnerNetworkId: currentSession.sessionOwnerNetworkId,
             senderPlayerIndex: session.senderPlayerIndex,
+            senderPlayerNetworkId: session.senderPlayerNetworkId,
             players: session.players,
             cards: currentSession.cards,
           });
@@ -137,16 +142,19 @@ export class GameServer {
         io.emit(PLAYER_LEAVE, sessionToLeave);
         io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
         socket.emit(PLAYER_LEAVE, session); // TODO is this useful?
+        socket.to(session.id).emit(PLAYER_LEAVE, session);
       });
 
-      socket.on(CARDS_UPDATE, (update: CardsUpdateModel) => {
+      socket.on(CARDS_UPDATE, (update: CardsUpdateMessage) => {
         const id = update.sessionId;
         const currentSession = sessionsDB.read(id);
         sessionsDB.update(id, {
           id,
           name: currentSession.name,
           status: 'joined',
+          sessionOwnerNetworkId: currentSession.sessionOwnerNetworkId,
           senderPlayerIndex: update.senderPlayerIndex,
+          senderPlayerNetworkId: update.senderPlayerNetworkId,
           players: currentSession.players,
           cards: update.cards,
         });
@@ -155,7 +163,7 @@ export class GameServer {
         io.emit(GAME_SESSIONS_UPDATE, sessionsDB.readAll());
       });
 
-      socket.on(PLAYERS_UPDATE, (update: PlayersUpdateModel) => {
+      socket.on(PLAYERS_UPDATE, (update: PlayersUpdateMessage) => {
         console.log(`SERVER: on PLAYERS_UPDATE =>\n${JSON.stringify(update, null, 2)}`);
         const id = update.sessionId;
         const currentSession = sessionsDB.read(id);
@@ -163,7 +171,9 @@ export class GameServer {
           id,
           name: currentSession.name,
           status: 'joined',
+          sessionOwnerNetworkId: currentSession.sessionOwnerNetworkId,
           senderPlayerIndex: update.senderPlayerIndex,
+          senderPlayerNetworkId: update.senderPlayerNetworkId,
           players: update.players,
           cards: currentSession.cards,
         });
